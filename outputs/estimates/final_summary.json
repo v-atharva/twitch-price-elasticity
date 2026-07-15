@@ -1,0 +1,70 @@
+{
+  "n_channels": 68,
+  "n_treated": 29,
+  "n_controls": 39,
+  "anticipation": 1,
+  "cs_overall_att": 0.5608360946600607,
+  "cs_overall_se": 0.2099161171516197,
+  "twfe_att": 0.843520001704371,
+  "elasticity_mature": -0.9002369950248303,
+  "elasticity_se_analytic": 0.09818741754863392,
+  "elasticity_ci_boot": [
+    -1.3623334511946157,
+    -0.33954222735227585
+  ],
+  "n_boot_effective": 170,
+  "dose_response": [
+    {
+      "country": "AR",
+      "dlogp": -0.9193012710270264,
+      "att": -0.20561440655343868,
+      "se": 0.24499546593395388,
+      "n_channels": 4
+    },
+    {
+      "country": "BR",
+      "dlogp": -1.187210503713658,
+      "att": 0.7326192578600601,
+      "se": 0.26493354237500344,
+      "n_channels": 7
+    },
+    {
+      "country": "ES",
+      "dlogp": -0.22364467886165518,
+      "att": 0.3253063997371078,
+      "se": 0.11822457660060072,
+      "n_channels": 12
+    },
+    {
+      "country": "MX",
+      "dlogp": -0.7268742253435179,
+      "att": 0.9854192003899944,
+      "se": 0.0978355630955363,
+      "n_channels": 2
+    },
+    {
+      "country": "TR",
+      "dlogp": -1.439304109587238,
+      "att": 0.5467707924105836,
+      "se": 0.4381952386991125,
+      "n_channels": 4
+    }
+  ],
+  "bacon_synthetic_by_type": [
+    {
+      "type": "earlier_vs_later",
+      "weight": 0.07689212842029217,
+      "avg_estimate": 0.42320101937070065
+    },
+    {
+      "type": "later_vs_earlier(forbidden)",
+      "weight": 0.07455406276388128,
+      "avg_estimate": 0.11466198830353837
+    },
+    {
+      "type": "treated_vs_never",
+      "weight": 0.8485538088158265,
+      "avg_estimate": 0.43323270101858635
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "panel": "data/processed/pilot_panel.parquet",
+  "n_channels": 55,
+  "n_rows": 1560,
+  "cs_overall_att": 1.1327611485291538,
+  "cs_overall_se": 0.45189748505805477,
+  "twfe_att": 0.8325342296179513,
+  "twfe_se": 0.19926217612011596,
+  "elasticity": -0.6616939707069298,
+  "elasticity_se": 0.40755393100809595,
+  "elasticity_ci": [
+    -1.4604849972405198,
+    0.1370970558266602
+  ],
+  "followers_overall_att": 1.0716032537891615,
+  "followers_overall_se": 0.44081532145958285
+}

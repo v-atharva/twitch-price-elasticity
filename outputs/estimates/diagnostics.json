@@ -1,0 +1,99 @@
+{
+  "pretrends_joint_test": {
+    "stat": 5.575865482338043,
+    "p_value": 0.3496986508073905,
+    "n_leads": 5,
+    "cov": "diagonal-approx"
+  },
+  "linear_trend_sensitivity": {
+    "slope": 0.030692844368929537,
+    "slope_se": 0.03278104275533198,
+    "post_avg_raw": 0.4274387478013827,
+    "post_avg_trend_adjusted": 0.21258883721887592
+  },
+  "placebo_prime": {
+    "att": -0.06689037972834577,
+    "se": 0.22160683337108172
+  },
+  "placebo_fake_dates_on_controls": {
+    "att": -0.2325933596490063,
+    "se": 0.2735906935590827
+  },
+  "permutation_test": {
+    "observed_att": 0.5608360946600607,
+    "n_permutations_effective": 200,
+    "p_value_two_sided": 0.005,
+    "perm_quantiles": {
+      "q025": -0.3615153396092517,
+      "q975": 0.4759202950960036
+    }
+  },
+  "robustness": [
+    {
+      "variant": "baseline (never-treated controls)",
+      "att": 0.5608360946600607,
+      "se": 0.2099161171516197,
+      "note": ""
+    },
+    {
+      "variant": "not-yet-treated controls",
+      "att": 0.560943709495918,
+      "se": 0.21139167292471617,
+      "note": "identification from timing only while g259 pending"
+    },
+    {
+      "variant": "drop AR",
+      "att": 0.6468010401678899,
+      "se": 0.20880119880636985,
+      "note": ""
+    },
+    {
+      "variant": "drop BR",
+      "att": 0.5195278714044271,
+      "se": 0.18714258485973126,
+      "note": ""
+    },
+    {
+      "variant": "drop ES",
+      "att": 0.630493288408146,
+      "se": 0.2826938152706498,
+      "note": ""
+    },
+    {
+      "variant": "drop MX",
+      "att": 0.5594769404368367,
+      "se": 0.23331972352647606,
+      "note": ""
+    },
+    {
+      "variant": "drop TR",
+      "att": 0.5033740138407069,
+      "se": 0.24819903332010923,
+      "note": ""
+    },
+    {
+      "variant": "language-only assignment (es pooled)",
+      "att": 0.5521262027463667,
+      "se": 0.22554903276640684,
+      "note": "ignores MX/AR vs ES timing differences - misassignment stress test"
+    },
+    {
+      "variant": "winsorized 1/99 within month",
+      "att": 0.5907088583855524,
+      "se": 0.22320889379625555,
+      "note": ""
+    },
+    {
+      "variant": "below-median pre-size",
+      "att": 0.9000360725127527,
+      "se": 0.2911688564367601,
+      "note": ""
+    },
+    {
+      "variant": "above-median pre-size",
+      "att": 0.01957372704497338,
+      "se": 0.26967274900235033,
+      "note": ""
+    }
+  ]
+}

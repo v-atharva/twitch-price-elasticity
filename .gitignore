@@ -2,8 +2,7 @@
 data/*
 !data/reference/
 
-# estimates are regenerable; figures are committed for the README
-outputs/estimates/
+# outputs (figures + headline estimate files) are committed for the README
 
 .venv/
 __pycache__/
