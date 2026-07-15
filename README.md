@@ -1,16 +1,40 @@
-# Did cheaper subs sell more subs?
+# 📉 Did Cheaper Subs Sell More Subs? The Price Elasticity of Twitch Subscriptions from the 2021 Local-Pricing Rollout
 
-**Price elasticity of Twitch channel subscriptions, estimated from the 2021 country-by-country local-pricing rollout using staggered difference-in-differences (Callaway & Sant'Anna 2021).**
+In mid-2021 Twitch cut the price of a Tier-1 channel subscription in most countries outside the US, calibrated to local purchasing power: -77% in Turkey, -69% in Brazil, -60% in Argentina, -52% in Mexico, -20% in most of Western Europe - while the US price never moved from $4.99.
+The rollout was staggered (Turkey/Mexico May 20, Latin America Jul 27, Middle East & Africa Jul 29, Asia-Pacific and Europe from Aug 5).
+Staggered timing + country-varying dose + a never-treated control group is a natural experiment for the question every subscription business asks: **what does price do to volume?**
 
-![Event study](outputs/figures/real_event_study.png)
+I built a validated staggered difference-in-differences pipeline (Callaway & Sant'Anna 2021), harvested a channel-month subscriber panel from public tracker data, and estimated the demand elasticity from the dose-response across countries.
 
-In mid-2021 Twitch cut the price of a Tier-1 channel subscription in most countries outside the US, calibrated to local purchasing power: −77% in Turkey, −60% in Argentina, −52% in Mexico, −69% in Brazil, −20% in most of Western Europe — while the US price never moved from $4.99. The rollout was staggered (Turkey/Mexico May 20; Latin America Jul 27; Middle East & Africa Jul 29; Asia-Pacific and Europe from Aug 5). Staggered timing + country-varying dose + a never-treated control group is a natural experiment for the question every subscription business asks: **what does price do to volume?**
+<p align="center"><img src="outputs/figures/real_event_study.png" width="85%"></p>
 
-**Headline result: the elasticity of paid subscriptions with respect to price is ≈ −0.9 (cluster-bootstrap 95% CI −1.4 to −0.3).** A 50% price cut predicts roughly 40–55% more paid subscriptions — demand responds strongly, but (at |ε| < 1 at the point estimate) not by enough to fully offset the price cut in revenue terms for the average treated top channel. That matches what Twitch itself signaled by pairing the rollout with a 12-month creator revenue guarantee.
+---
 
-## Identification
+### Headline Findings
 
-Prices changed per **viewer** country, but outcomes exist per **channel**. The design assigns each channel to the treatment cohort of its dominant audience country, proxied by broadcast language plus streamer country (Spanish is split: Spain vs Mexico vs Argentina have different treatment dates and doses).
+1. **The elasticity of paid subscriptions with respect to price is ~ -0.9** (cluster-bootstrap 95% CI -1.4 to -0.3).
+   A 50% price cut predicts roughly 40-55% more paid subscriptions - demand responds strongly, but at |elasticity| < 1 (at the point estimate) not by enough to fully offset the cut in revenue terms for the average treated top channel.
+   That matches what Twitch itself signaled by pairing the rollout with a 12-month creator revenue guarantee.
+2. **The effect lives below the superstar tier.**
+   Below-median-size channels drive the response (+0.90 +- 0.29 log points) while mega-channels show none (+0.02 +- 0.27) - consistent with affordability mattering most outside the top of the distribution, and implying the platform-wide elasticity is plausibly *larger* than this top-creator estimate.
+3. **The falsification check earned its keep.**
+   Prime subs are free (bundled with Amazon Prime), so price cuts should not move them.
+   An early naive specification failed this placebo spectacularly (+1.07 "effect" - the 2021 Spanish/Brazilian Twitch popularity boom, not price); under the final specification the placebo is **-0.07 (se 0.22)** - nothing.
+   That failure is what forced the anticipation correction and the per-country dose design.
+4. **Naive TWFE overstates the effect: 0.84 vs 0.56 for Callaway & Sant'Anna.**
+   A Goodman-Bacon decomposition (on the balanced synthetic panel) shows why: "forbidden" later-vs-earlier comparisons average 0.11 against 0.43 for clean treated-vs-never comparisons, and TWFE mixes them.
+5. **Permutation inference: p = 0.005.**
+   Across 200 random reassignments of treated status, the observed ATT of +0.56 exceeds every permuted draw - the strongest inference statement a 29-treated-channel sample allows.
+6. **The binding constraint is history, not scraping effort.**
+   TwitchTracker only tracked a broad set of channels from Nov 2021 - after treatment - so channels with a usable pre-period are almost exclusively 2021's top creators.
+   This is a **top-creator elasticity**, not a platform-wide one, and I say so wherever it matters.
+
+---
+
+### Identification
+
+Prices changed per **viewer** country, but outcomes exist per **channel**.
+The design assigns each channel to the treatment cohort of its dominant audience country, proxied by broadcast language plus streamer country (Spanish is split: Spain vs Mexico vs Argentina have different treatment dates and doses).
 
 ```mermaid
 flowchart LR
@@ -34,71 +58,192 @@ flowchart LR
     SUBS -.->|falsification| PRIME
 ```
 
-- **Estimator:** Callaway & Sant'Anna (2021) group-time ATTs, doubly robust, never-treated controls, `anticipation=1` (mid-month rollouts leave the g−1 month partially treated; the rollout was announced 2021-05-17). Estimates from the Python `differences` package **match R's reference `did` implementation to machine precision** (`make crosscheck`, enforced in CI).
-- **Dose response:** each country's mature-window ATT (6–12 months post) against its log price change at rollout-date FX gives the elasticity by WLS through the origin:
+- **Estimator.**
+  Callaway & Sant'Anna (2021) group-time ATTs, doubly robust, never-treated controls, `anticipation=1` (mid-month rollouts leave the g-1 month partially treated; the rollout was announced 2021-05-17).
+  Estimates from the Python `differences` package **match R's reference `did` implementation to machine precision** (`make crosscheck`, enforced in CI).
+- **Dose response.**
+  Each country's mature-window ATT (6-12 months post) against its log price change at rollout-date FX gives the elasticity by WLS through the origin:
 
-![Dose response](outputs/figures/dose_response.png)
+<p align="center"><img src="outputs/figures/dose_response.png" width="85%"></p>
 
-- **Why not plain TWFE:** the naive two-way-fixed-effects estimate on the same panel is 0.84 vs 0.56 for CS. The repo includes a Goodman-Bacon decomposition (on the balanced synthetic panel) showing why: "forbidden" later-vs-earlier comparisons average 0.11 vs 0.43 for clean treated-vs-never comparisons, and TWFE mixes them.
+- **Validation before any real data.**
+  `make synth && make test` generates a synthetic panel with the real cohort structure and a **known planted elasticity of -0.6**, then requires in CI that the CS event study recovers the planted dynamic effects, the recovered elasticity is -0.60 +- 0.05, naive TWFE misses by multiples of the CS error, and placebos on never-treated channels return ~0.
+  The exact same code path then runs on the real data.
 
-## Estimator validation before any real data
+---
 
-`make synth && make test` generates a synthetic panel with the real cohort structure and a **known elasticity of −0.6**, then requires in CI that: the CS event study recovers the planted dynamic effects; the recovered elasticity is −0.60 ± 0.05; naive TWFE misses by multiples of the CS error; placebos on never-treated channels return ~0. The exact same code path then runs on real data.
+### Technology Stack
 
-## Data — and its flaws, stated plainly
+I used a combination of the following technologies:
+
+1. **Python 3.12 + uv** - the core language, with fast lockfile-driven environments used identically in development and CI.
+2. **pandas + NumPy + PyArrow** - panel construction and compact Parquet artifacts at every pipeline stage.
+3. **`differences`** - the primary Callaway & Sant'Anna implementation, wrapped behind a thin adapter so downstream code never touches backend structure.
+4. **R + `did`** - the reference implementation of Callaway & Sant'Anna, run in CI to cross-check the Python estimates to machine precision.
+5. **pyfixest** - the deliberately naive TWFE benchmark and the regressions behind the Goodman-Bacon contrast.
+6. **matplotlib** - every committed figure, regenerable from `make figures`.
+7. **BeautifulSoup4 + lxml** - pure HTML-to-records parsers, fully unit-testable on fixture files with zero network access.
+8. **Playwright + httpx** - a headed real-browser fetcher for Cloudflare-fronted pages and a polite HTTP client (on-disk cache, jittered rate limiting, encoded robots rules) for Wayback and APIs.
+9. **pytest + ruff + mypy** - the validation suite and quality gates, all enforced in CI.
+
+---
+
+### The Three Components
+
+1. **Acquisition (`src/ingest/`).**
+   Polite plumbing enforced at the infrastructure layer so no scraper can violate it: nothing fetched twice (on-disk cache), nothing fetched fast (jittered rate limiter), nothing disallowed fetched (encoded robots rules; unknown hosts are rejected until reviewed).
+   A Wayback module recovers 2021-era rosters and validation series; repeated Cloudflare challenges raise a hard stop rather than trigger circumvention.
+2. **Panel construction (`src/panel/`).**
+   One canonical channel-month schema is the contract: the synthetic generator (with a planted elasticity and per-cell injected effects) and the real-data builder (country mapping, attrition censoring, cohort assignment through a >=15-treated-days rule) emit the exact same shape, so everything downstream is source-agnostic.
+   The treatment dose comes from a hand-curated price table with per-row provenance, converted at rollout-date ECB FX pinned in a committed CSV.
+3. **Estimation and diagnostics (`src/estimate/`, `src/diagnostics/`).**
+   The CS wrapper, dose-response elasticity, TWFE benchmark, and Goodman-Bacon decomposition, then the diagnostics battery: pre-trends and trend sensitivity, Prime-subs placebo, fake treatment dates, permutation inference, and a robustness grid (control group, drop-one-country, assignment rule, winsorization, size splits).
+
+---
+
+### Set Up
+
+#### 1 Environment Setup
+
+1. Clone the repository and install the environment (uv, Python 3.12):
+   ```bash
+   uv sync --group dev
+   ```
+
+#### 2 Synthetic Pipeline (zero network access)
+
+1. Generate the synthetic panel and validate the estimator against the planted truth:
+   ```bash
+   make synth && make test
+   ```
+2. Run every synthetic artifact end-to-end:
+   ```bash
+   make all
+   ```
+3. Cross-check Python `differences` against R `did` (needs R with the `did` package):
+   ```bash
+   make crosscheck
+   ```
+
+#### 3 Real-Data Stages
+
+Cached inputs live in `data/interim/`; each stage is resumable and reads `config/study.yaml`:
+
+```bash
+uv run python -m src.panel.pilot_build     # build the real channel-month panel
+uv run python -m src.estimate.final       # event study, dose response, elasticity
+uv run python -m src.diagnostics.run      # placebos, pre-trends, permutation, robustness
+```
+
+---
+
+### The Data - and Its Flaws, Stated Plainly
 
 | What | Source | Note |
 |---|---|---|
-| Monthly subs by tier (Prime/T1/T2/T3), 2020–2022 | TwitchTracker rendered per-channel charts, harvested via a real user browser session at human pace | robots.txt-compliant; Cloudflare-challenged pages were never circumvented by automation |
+| Monthly subs by tier (Prime/T1/T2/T3), 2020-2022 | TwitchTracker rendered per-channel charts, harvested via a real user browser session at human pace | robots.txt-compliant; Cloudflare-challenged pages were never circumvented by automation |
 | 2021-era channel roster | Wayback-archived TwitchTracker language rankings + archived subscriber pages | selection rule documented in `data/interim/` |
 | Per-country prices & dates | Curated CSV with per-row source URL (Twitch blog, Engadget, Dot Esports, Infobae) + ECB FX at rollout date | `data/reference/price_table.csv` |
-| Panel | 29 treated channels (TR 4, MX 2, BR 7, ES 12, AR 4) vs 39 US-audience controls, 2020-01–2022-12, attrition-censored | built by `src/panel/pilot_build.py` |
+| Panel | 29 treated channels (TR 4, MX 2, BR 7, ES 12, AR 4) vs 39 US-audience controls, 2020-01 to 2022-12, attrition-censored | built by `src/panel/pilot_build.py` |
 
-**The binding constraint is history, not scraping effort:** TwitchTracker only tracked a broad set of channels from Nov 2021 — after treatment. Channels with a usable pre-period are almost exclusively 2021's top creators. This is therefore a **top-creator elasticity**, not a platform-wide one.
+---
 
-## Diagnostics (the part that matters)
+### Diagnostics (the part that matters)
 
-- **Prime-subs placebo: passes.** Prime subs are free (bundled with Amazon Prime), so the price cut should not move them. Under the final specification the placebo "effect" is **−0.07 (se 0.22)** — nothing. This check earned its keep: an early naive specification *failed* it spectacularly (Prime subs "responded" +1.07 — the 2021 Spanish/Brazilian Twitch popularity boom, not price), which is what forced the anticipation correction and the per-country dose design.
-- **Fake treatment dates** on US-audience channels: −0.23 (se 0.27), covers zero. **Permutation inference** (200 reassignments of treated status): the observed ATT of +0.56 exceeds every permuted draw — **p = 0.005**, the strongest inference statement this small sample allows.
-- **Pre-trends:** joint leads test p = 0.35 (no evidence against parallel trends). Linear-trend sensitivity (the transparent special case of Rambachan–Roth honest-DiD): an insignificant lead slope of +0.03/month would, if extrapolated, cut the post-period average from 0.43 to 0.21 log points — the effect stays positive, but its magnitude is sensitive to trend assumptions. Stated as such.
-- **Robustness battery** (`outputs/estimates/robustness.csv`): not-yet-treated controls give an identical 0.56; drop-one-country spans 0.50–0.65; language-only assignment and winsorization barely move it. The interesting split: **below-median-size channels drive the effect (+0.90 ± 0.29) while the mega-channels show none (+0.02 ± 0.27)** — consistent with affordability mattering most outside the superstar tier, and implying the platform-wide elasticity is plausibly *larger* than our top-creator estimate.
+- **Prime-subs placebo: passes.**
+  Under the final specification the placebo "effect" is -0.07 (se 0.22); see Headline Finding 3 for the naive specification this check killed.
 
-## Threats to validity (honest list)
+<p align="center"><img src="outputs/figures/placebo_prime_event_study.png" width="85%"></p>
 
-1. **Contaminated controls.** English-language channels have non-US viewers who *were* treated → attenuates estimates toward zero. Direction known, magnitude not.
-2. **Gift subs are inside the paid counts.** Twitch reported 5× gifting in Turkey/Mexico post-cut; part of the measured response is gifting behavior, which has its own price sensitivity.
-3. **Tiny treated N (29 channels).** Analytic SEs are optimistic; the quotable uncertainty is the cluster bootstrap and permutation inference. Mexico rests on 2 channels; Argentina's negative point estimate reflects 4 channels and 2022 attrition (a top AR streamer semi-retired).
-4. **Popularity shocks correlated with treatment.** The 2021 Spanish-language Twitch boom is the clearest violation of parallel trends; handled via the Prime placebo, trend-sensitivity, and country-level dose contrast — but not eliminated.
-5. **Currency collapse.** The Turkish lira fell ~45% in late 2021; the dose uses rollout-date FX, and the local-currency price ratio is FX-free, but the *experienced* price path drifted after rollout.
-6. **Measurement error and selection into tracking.** Third-party tracker data; tracking starts cluster at 2020-05 and 2021-11; survivorship in rosters partially mitigated by using 2021-era archived rankings.
-7. **Anticipation.** Announced May 17, 2021; first cohort treated May 20. `anticipation=1` plus the ≥15-treated-days cohort rule handle partial-month exposure.
-8. **Revenue guarantee.** Twitch's 12-month guarantee affects *revenue*, not subscription counts — a key reason the outcome is counts.
+- **Fake treatment dates** on US-audience channels: -0.23 (se 0.27), covers zero.
+- **Permutation inference** (200 reassignments of treated status): observed ATT +0.56 exceeds every permuted draw, p = 0.005.
+- **Pre-trends.**
+  Joint leads test p = 0.35 (no evidence against parallel trends).
+  Linear-trend sensitivity (the transparent special case of Rambachan & Roth honest-DiD): an insignificant lead slope of +0.03/month would, if extrapolated, cut the post-period average from 0.43 to 0.21 log points - the effect stays positive, but its magnitude is sensitive to trend assumptions, and I state it as such.
+- **Robustness battery** (`outputs/estimates/robustness.csv`).
+  Not-yet-treated controls give an identical 0.56; drop-one-country spans 0.50-0.65; language-only assignment and winsorization barely move it.
+  The interesting split is the size heterogeneity in Headline Finding 2.
 
-## What an internal Twitch data scientist could do better
+---
 
-This design squeezes a public natural experiment through third-party tracker data. With first-party data the same question gets dramatically cleaner answers:
+### Limitations (honest list)
 
-1. **Viewer-level treatment.** Assign treatment by each subscriber's actual billing country instead of channel-level audience proxies — eliminating both control contamination and the Spanish-language assignment problem in one move.
-2. **True counterfactual pricing.** Twitch ran pre-rollout price tests (Brazil); with experiment logs, the elasticity comes from randomized variation, not parallel-trends assumptions.
-3. **Separate margins.** Distinguish new subs vs renewals vs gift subs vs Prime conversions; count-based elasticity hides which margin moves (acquisition vs retention), which is what pricing strategy actually needs.
-4. **Revenue, not just volume.** With per-country net revenue per sub (after taxes, FX, platform split), estimate the revenue-maximizing price by country rather than a single global elasticity.
-5. **Full size distribution.** Tracker coverage forces a top-creator sample; internal data covers the long tail, where affordability effects are plausibly largest — and where the guarantee program's cost/benefit is decided.
-6. **Spillovers.** Gift subs from treated viewers to untreated channels, and viewers migrating between channels, violate SUTVA in ways only a full interaction graph can quantify.
+1. **Contaminated controls.**
+   English-language channels have non-US viewers who *were* treated, attenuating estimates toward zero.
+   Direction known, magnitude not.
+2. **Gift subs are inside the paid counts.**
+   Twitch reported 5x gifting in Turkey/Mexico post-cut; part of the measured response is gifting behavior, which has its own price sensitivity.
+3. **Tiny treated N (29 channels).**
+   Analytic SEs are optimistic; the quotable uncertainty is the cluster bootstrap and permutation inference.
+   Mexico rests on 2 channels; Argentina's negative point estimate reflects 4 channels and 2022 attrition (a top AR streamer semi-retired).
+4. **Popularity shocks correlated with treatment.**
+   The 2021 Spanish-language Twitch boom is the clearest violation of parallel trends; handled via the Prime placebo, trend sensitivity, and the country-level dose contrast - but not eliminated.
+5. **Currency collapse.**
+   The Turkish lira fell ~45% in late 2021; the dose uses rollout-date FX and the local-currency price ratio is FX-free, but the *experienced* price path drifted after rollout.
+6. **Measurement error and selection into tracking.**
+   Third-party tracker data; tracking starts cluster at 2020-05 and 2021-11; survivorship in rosters is partially mitigated by using 2021-era archived rankings.
+7. **Anticipation.**
+   Announced May 17, 2021; first cohort treated May 20.
+   `anticipation=1` plus the >=15-treated-days cohort rule handle partial-month exposure.
+8. **Revenue guarantee.**
+   Twitch's 12-month guarantee affects *revenue*, not subscription counts - a key reason the outcome is counts.
 
-## Reproduce
+---
 
-```bash
-uv sync --group dev
-make synth && make test      # synthetic pipeline + estimator-recovers-truth validation
-make all                     # every synthetic artifact end-to-end, zero network
-make crosscheck              # Python `differences` vs R `did` (needs R + did)
+### Future Work: What an Internal Twitch Data Scientist Could Do Better
 
-# real-data stages (cached inputs in data/interim/):
-uv run python -m src.panel.pilot_build
-uv run python -m src.estimate.final
-uv run python -m src.diagnostics.run
+This design squeezes a public natural experiment through third-party tracker data.
+With first-party data the same question gets dramatically cleaner answers:
+
+1. **Viewer-level treatment** - assign treatment by each subscriber's actual billing country instead of channel-level audience proxies, eliminating both control contamination and the Spanish-language assignment problem in one move.
+2. **True counterfactual pricing** - Twitch ran pre-rollout price tests (Brazil); with experiment logs, the elasticity comes from randomized variation, not parallel-trends assumptions.
+3. **Separate margins** - distinguish new subs vs renewals vs gift subs vs Prime conversions; count-based elasticity hides which margin moves (acquisition vs retention), which is what pricing strategy actually needs.
+4. **Revenue, not just volume** - with per-country net revenue per sub (after taxes, FX, platform split), estimate the revenue-maximizing price by country rather than a single global elasticity.
+5. **Full size distribution** - tracker coverage forces a top-creator sample; internal data covers the long tail, where affordability effects are plausibly largest and where the guarantee program's cost/benefit is decided.
+6. **Spillovers** - gift subs from treated viewers to untreated channels, and viewers migrating between channels, violate SUTVA in ways only a full interaction graph can quantify.
+
+---
+
+### References
+
+#### Econometric methodology
+
+- [Difference-in-differences with multiple time periods](https://doi.org/10.1016/j.jeconom.2020.12.001) (Callaway & Sant'Anna, *Journal of Econometrics*, 2021) - the group-time ATT estimator behind every headline number; implemented via the Python `differences` package and cross-checked against the authors' R `did` package.
+- [Doubly robust difference-in-differences estimators](https://doi.org/10.1016/j.jeconom.2020.06.003) (Sant'Anna & Zhao, *Journal of Econometrics*, 2020) - the doubly robust estimation method (`est_method="dr"`) used in every CS fit.
+- [Difference-in-differences with variation in treatment timing](https://doi.org/10.1016/j.jeconom.2021.03.014) (Goodman-Bacon, *Journal of Econometrics*, 2021) - why the naive TWFE benchmark is biased here; the decomposition reported in Headline Finding 4.
+- [A more credible approach to parallel trends](https://doi.org/10.1093/restud/rdad018) (Rambachan & Roth, *Review of Economic Studies*, 2023) - the honest-DiD framing behind the linear-trend sensitivity analysis.
+
+#### Data and primary sources
+
+- [Twitch blog: Building global communities with local subscription pricing](https://blog.twitch.tv/en/2021/05/17/building-global-communities-with-local-subscription-pricing/) (2021-05-17) - the rollout announcement; anchor for dates, anticipation, and the revenue guarantee.
+- [Twitch blog: Local sub pricing expands worldwide](https://blog.twitch.tv/en/2021/08/05/local-sub-pricing-expands-worldwide/) (2021-08-05) - the worldwide expansion table; source of the printed per-country % decreases pinned by anchor tests.
+- TwitchTracker and the [Wayback Machine](https://web.archive.org/) - the subscriber tier charts and the 2021-era archived rankings; every price-table row carries its own source URL in `data/reference/price_table.csv`.
+
+---
+
 ```
-
-Layout: `src/{ingest,panel,estimate,diagnostics,report}/`, config in `config/study.yaml`, curated reference tables in `data/reference/`, narrative in `notebooks/analysis.ipynb`, ~300-word stakeholder summary in [RESULTS.md](RESULTS.md), design history in [PLAN.md](PLAN.md).
+root/
+├── .github/workflows/ci.yml     # CI: lint, types, tests, synthetic pipeline, R crosscheck
+├── config/study.yaml            # Single source of truth for the study design
+├── data/
+│   ├── reference/               # Curated price table, FX at rollout, channel-country map
+│   ├── interim/                 # Harvested tracker data + rosters (not tracked)
+│   └── processed/               # Built panels as parquet (not tracked)
+├── notebooks/analysis.ipynb     # Narrative results walkthrough
+├── outputs/
+│   ├── figures/                 # Committed, regenerable figures
+│   └── estimates/               # Event study, dose response, robustness (committed headline files)
+├── src/
+│   ├── ingest/                  # Polite cache/limiter/robots, Wayback, browser fetcher, parsers
+│   ├── panel/                   # Schema contract, synthetic DGP, price table, panel builders
+│   ├── estimate/                # CS wrapper, dose response, TWFE, Bacon, R crosscheck
+│   ├── diagnostics/             # Placebos, pre-trends, permutation, robustness
+│   └── report/                  # Figure generation
+├── tests/                       # Estimator-recovers-planted-truth validation + unit tests
+├── Makefile                     # Every artifact regenerable from here
+├── PLAN.md                      # Design history and milestones
+├── RESULTS.md                   # ~300-word stakeholder summary
+└── README.md
+```
 
 *Data collection respected robots.txt and rate limits throughout; bot-protected pages were accessed only through a real, human-operated browser session, and blocked paths were treated as blocked. The October 2021 leaked payout dataset was deliberately not used.*
