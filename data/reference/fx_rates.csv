@@ -1,0 +1,21 @@
+date,currency,units_per_usd,source
+2021-05-20,TRY,8.3679,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-05-20,MXN,19.8984,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-05-20,BRL,5.2911,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-05-20,EUR,0.81947,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-05-20,GBP,0.70802,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-07-27,TRY,8.558,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-07-27,MXN,20.041,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-07-27,BRL,5.1895,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-07-27,EUR,0.84674,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-07-27,GBP,0.72399,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,AUD,1.3494,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,NZD,1.4143,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,KRW,1142.06,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,THB,33.24,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,SGD,1.3499,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,GBP,0.71781,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,EUR,0.84388,ECB reference rates via api.frankfurter.dev (accessed 2026-07-15)
+2021-08-05,USD,1.0,identity
+2021-05-20,USD,1.0,identity
+2021-07-27,USD,1.0,identity
