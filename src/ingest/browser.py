@@ -10,6 +10,7 @@ Rendered HTML is cached on disk so a page is never loaded twice across runs.
 
 from __future__ import annotations
 
+import contextlib
 import random
 import time
 from dataclasses import dataclass, field
@@ -92,13 +93,9 @@ class BrowserFetcher:
         return html
 
     def _settle(self, wait_selector: str | None) -> str:
-        try:
+        with contextlib.suppress(Exception):  # busy pages never go idle
             self._page.wait_for_load_state("networkidle", timeout=20_000)
-        except Exception:
-            pass  # busy pages never go idle; proceed with what we have
         if wait_selector:
-            try:
+            with contextlib.suppress(Exception):  # parser sees whatever rendered
                 self._page.wait_for_selector(wait_selector, timeout=15_000)
-            except Exception:
-                pass  # caller's parser will see whatever rendered
         return str(self._page.content())
