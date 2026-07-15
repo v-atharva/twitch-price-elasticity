@@ -53,6 +53,14 @@ estimator:
   event_window: [-12, 12]
   mature_window: [6, 12]     # event-times considered "full effect" for elasticity
 
+scrape:
+  min_delay_seconds: 2.5
+  jitter_seconds: 2.0
+  pilot:
+    # broadcast language -> target channel count (TwitchTracker ranking pages, top-down)
+    languages: { tr: 80, pt: 80, es: 100, en: 120 }
+    ranking_pages_per_language: 3
+
 sample:
   # Filled in at M3/M4: roster selection rules, size tiers, min pre/post coverage.
   min_pre_months: 6
