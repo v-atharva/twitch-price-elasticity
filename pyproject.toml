@@ -25,6 +25,7 @@ dev = [
     "pytest>=8",
     "pandas-stubs",
     "types-PyYAML",
+    "nbformat>=5.10.4",
 ]
 scrape = [
     "playwright>=1.45",
