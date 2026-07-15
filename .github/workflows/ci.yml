@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --group dev
+      - run: make lint
+      - run: make typecheck
+      - run: make test
+      - name: synthetic pipeline end-to-end
+        run: make all
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-figures
+          path: outputs/figures/
+
+  # M5 adds an R job here: install R + the `did` package, re-estimate the
+  # synthetic panel, and assert |ATT_python - ATT_R| < tolerance. R's `did`
+  # is the reference implementation of Callaway & Sant'Anna (2021).

@@ -1,0 +1,66 @@
+# Single source of truth for the study design. Every pipeline stage reads this file.
+
+panel:
+  start: "2020-01"
+  end: "2022-12"
+
+# Treatment cohorts: month a channel's dominant-audience country received local pricing.
+# `dlogp` = log(new_price_usd_at_rollout / 4.99), the treatment dose. Values here are
+# synthetic-stage placeholders roughly matching known anchors (Turkey ~-77%, Mexico ~-52%);
+# M2 replaces them with the curated price table (data/reference/price_table.csv).
+cohorts:
+  may2021:
+    treat_month: "2021-05"
+    example_countries: [TR, MX]
+    dlogp: -1.10
+  jul2021:
+    treat_month: "2021-07"
+    example_countries: [BR, AR, CL, CO]
+    dlogp: -0.75
+  aug2021:
+    treat_month: "2021-08"
+    example_countries: [TH, KR, IN, PH]
+    dlogp: -0.60
+  oct2021:
+    treat_month: "2021-10"
+    example_countries: [DE, FR, IT, PL]
+    dlogp: -0.35
+
+control:
+  label: "US/English never-treated"
+  countries: [US]
+  languages: [en]
+
+synth:
+  seed: 42
+  n_channels: 3000
+  cohort_shares: { never: 0.40, may2021: 0.20, jul2021: 0.15, aug2021: 0.15, oct2021: 0.10 }
+  true_elasticity: -0.6      # %d(subs)/%d(price): price cuts increase subs
+  ramp_tau: 1.5              # months; effect = full * (1 - exp(-(k+1)/ramp_tau))
+  noise_sd: 0.15
+  base_log_subs_mean: 5.3    # ~200 subs median channel
+  base_log_subs_sd: 1.2
+  monthly_growth: { "2020": 0.015, "2021": 0.005, "2022": 0.000 }  # COVID-era common trend
+  anticipation_months: 0
+
+estimator:
+  backend: differences       # primary Python CS implementation (validated vs R `did` in CI)
+  est_method: dr             # doubly robust
+  control_group: never_treated
+  covariates: [pre_size, cat_share_games]   # measured pre-treatment only (no look-ahead)
+  anticipation: 0            # synth: 0. Real study: 1-2 (rollout pre-announced ~Apr 2021)
+  alpha: 0.05
+  event_window: [-12, 12]
+  mature_window: [6, 12]     # event-times considered "full effect" for elasticity
+
+sample:
+  # Filled in at M3/M4: roster selection rules, size tiers, min pre/post coverage.
+  min_pre_months: 6
+  min_post_months: 6
+
+sources:
+  price_table: data/reference/price_table.csv
+  fx_rates: data/reference/fx_rates.csv
+  # Leaked 2021 payout dataset: NEVER auto-enabled. Requires explicit opt-in by the
+  # project owner; pipeline runs fully without it.
+  payouts_dataset_enabled: false

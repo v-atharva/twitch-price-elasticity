@@ -1,0 +1,15 @@
+# data is rebuilt via make targets; only the curated reference tables are committed
+data/*
+!data/reference/
+
+# estimates are regenerable; figures are committed for the README
+outputs/estimates/
+
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.DS_Store
