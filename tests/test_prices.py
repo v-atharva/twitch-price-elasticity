@@ -48,6 +48,14 @@ def test_brazil_anchor(table) -> None:
     assert br["provenance_quality"] == "indirect"  # upgrade at M5
 
 
+def test_argentina_anchor(table) -> None:
+    ar = row(table, "AR")
+    assert ar["treat_date"] == "2021-07-27"
+    assert ar["treat_month_g"] == "2021-08"
+    # Infobae 2021-07-27: USD 4.99 -> USD 1.99 ("60% mas barato")
+    assert ar["pct_price_change"] == pytest.approx(-0.601, abs=0.005)
+
+
 def test_us_never_treated(table) -> None:
     us = row(table, "US")
     assert pd.isna(us["treat_month_g"])

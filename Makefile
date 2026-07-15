@@ -28,6 +28,9 @@ fix:
 typecheck:
 	uv run mypy
 
+crosscheck:
+	uv run python -m src.estimate.r_crosscheck
+
 all: synth estimate
 
 clean:

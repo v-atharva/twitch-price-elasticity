@@ -82,9 +82,6 @@ def build_panel() -> pd.DataFrame:
     confidence = dict(zip(cmap.channel, cmap.confidence, strict=True))
     prices = load_price_table()
     g_by_country = dict(zip(prices.country_code, prices.treat_mindex_g, strict=True))
-    # Argentina: treated with LatAm on 2021-07-27 (g=2021-08); rollout-era ARS
-    # price not yet sourced -> in cohorts but excluded from the dose regression.
-    g_by_country.setdefault("AR", float(to_mindex("2021-08")))
 
     # channels not in the map are assumed English/US-audience controls if they
     # came from the English roster; the roster file is the source of truth

@@ -24,6 +24,20 @@ jobs:
           name: synthetic-figures
           path: outputs/figures/
 
-  # M5 adds an R job here: install R + the `did` package, re-estimate the
-  # synthetic panel, and assert |ATT_python - ATT_R| < tolerance. R's `did`
-  # is the reference implementation of Callaway & Sant'Anna (2021).
+  # R `did` is the reference implementation of Callaway & Sant'Anna (2021);
+  # this job asserts the Python estimator matches it on the synthetic panel.
+  r-crosscheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --group dev
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.3"
+          use-public-rspm: true
+      - run: Rscript -e 'install.packages("did")'
+      - run: make synth
+      - run: uv run python -m src.estimate.r_crosscheck

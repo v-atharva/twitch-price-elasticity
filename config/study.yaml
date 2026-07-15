@@ -48,7 +48,11 @@ estimator:
   est_method: dr             # doubly robust
   control_group: never_treated
   covariates: [pre_size, cat_share_games]   # measured pre-treatment only (no look-ahead)
-  anticipation: 0            # synth: 0. Real study: 1-2 (rollout pre-announced ~Apr 2021)
+  anticipation: 0            # synthetic DGP has no anticipation
+  # Real-data runs MUST use >=1: mid-month rollouts leave the g-1 month partially
+  # treated (May 2021 has 12 treated days for TR/MX), so the default base period is
+  # contaminated; the rollout was also publicly announced 2021-05-17.
+  anticipation_real: 1
   alpha: 0.05
   event_window: [-12, 12]
   mature_window: [6, 12]     # event-times considered "full effect" for elasticity

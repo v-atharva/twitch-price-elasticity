@@ -53,11 +53,15 @@ def main() -> None:
     config = load_config(args.config)
     panel = validate_panel(pd.read_parquet(args.panel))
     is_synth = "true_effect" in panel.columns
+    # real panels have partially-treated first months + a pre-announced rollout
+    anticipation = (
+        config.estimator["anticipation"] if is_synth else config.estimator["anticipation_real"]
+    )
     out = Path(args.out_dir)
     (out / "estimates").mkdir(parents=True, exist_ok=True)
 
     # --- primary outcome ---------------------------------------------------
-    cs = run_cs(panel, config, outcome="log_subs")
+    cs = run_cs(panel, config, outcome="log_subs", anticipation=anticipation)
     cs.event_study.to_csv(out / "estimates/event_study_log_subs.csv", index=False)
     cs.cohort.to_csv(out / "estimates/cohort_atts_log_subs.csv", index=False)
     cs.group_time.to_csv(out / "estimates/group_time_atts_log_subs.csv", index=False)
@@ -67,7 +71,12 @@ def main() -> None:
     elas.by_cohort.to_csv(out / "estimates/elasticity_by_cohort.csv", index=False)
 
     # --- falsification outcome: followers are free ------------------------
-    cs_follow = run_cs(panel, config, outcome="log_followers")
+    cs_follow = run_cs(
+        panel[panel["log_followers"].notna()],
+        config,
+        outcome="log_followers",
+        anticipation=anticipation,
+    )
     cs_follow.event_study.to_csv(out / "estimates/event_study_log_followers.csv", index=False)
 
     summary = {
