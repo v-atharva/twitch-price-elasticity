@@ -4,14 +4,15 @@ data/*
 
 # outputs (figures + headline estimate files) are committed for the README
 
-.venv/
 __pycache__/
 *.pyc
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.ipynb_checkpoints/
-.DS_Store
+
+# dot files/dirs (tool caches, editor state, OS cruft) are never tracked,
+# except the repo essentials re-included below
+.*
+!.github/
+!.gitignore
+!.python-version
 
 # documentation agent workspace
 devdocs/
