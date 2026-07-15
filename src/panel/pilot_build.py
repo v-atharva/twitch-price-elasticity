@@ -57,6 +57,9 @@ def load_records() -> dict[str, list[tuple[str, float | None, float | None]]]:
         if isinstance(rec, dict) and rec.get("rows"):
             out[ch] = [(m, p, q) for m, p, q in rec["rows"]]
     delta = json.loads((PILOT_DIR / "pilot_delta.json").read_text())
+    scaleup = PILOT_DIR / "scaleup_delta.json"
+    if scaleup.exists():
+        delta.update(json.loads(scaleup.read_text()))
     for ch, rec in delta.items():
         if not isinstance(rec, dict):
             continue
@@ -87,8 +90,17 @@ def build_panel() -> pd.DataFrame:
     # came from the English roster; the roster file is the source of truth
     roster = pd.read_csv("data/interim/pilot_roster_v2.csv")
     roster_lang = dict(zip(roster.channel, roster.language_expected, strict=True))
-    for extra in ("cristinini", "alkapone", "coringa", "forsen", "cohhcarnage"):
-        roster_lang.setdefault(extra, {"coringa": "pt"}.get(extra, "en" if extra in ("forsen", "cohhcarnage") else "es"))
+    # renames + scale-up tranche channels not present in the pilot roster file
+    roster_lang.setdefault("cristinini", "es")
+    roster_lang.setdefault("alkapone", "es")
+    roster_lang.setdefault("coringa", "pt")
+    scaleup_en = (
+        "forsen", "cohhcarnage", "39daph", "atrioc", "botezlive", "boxbox", "chocotaco",
+        "clintstevens", "cdawg", "distortion2", "dogdog", "gothamchess", "gmhikaru",
+        "itshafu", "kitboga", "lilypichu", "pokelawls", "scarra",
+    )  # fmt: skip
+    for ch in scaleup_en:
+        roster_lang.setdefault(ch, "en")
 
     rows = []
     lo, hi = to_mindex(PANEL_START), to_mindex(PANEL_END)

@@ -13,3 +13,6 @@ __pycache__/
 .ruff_cache/
 .ipynb_checkpoints/
 .DS_Store
+
+# documentation agent workspace
+devdocs/
