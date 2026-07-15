@@ -1,0 +1,53 @@
+channel,country,confidence,note
+elraenn,TR,high,Turkish-language; Turkey
+jahrein,TR,high,Turkish-language; Turkey
+kendinemuzisyen,TR,high,Turkish-language; Turkey
+berkriptepe,TR,high,Turkish-language
+annadeniz,TR,high,Turkish-language
+holyphoenix,TR,high,Turkish-language
+juansguarnizo,MX,high,Mexico-based (widely documented)
+elded,MX,high,Mexican
+elmariana,MX,high,Mexican
+alkapone,MX,high,Mexican (MYM Alkapone)
+gaules,BR,high,Brazilian
+alanzoka,BR,high,Brazilian
+cellbit,BR,high,Brazilian
+nobru,BR,high,Brazilian
+coringa,BR,high,Brazilian (LOUD Coringa)
+baiano,BR,high,Brazilian
+boltz,BR,high,Brazilian
+casimito,BR,high,Brazilian (Casimiro)
+gabepeixe,BR,high,Brazilian
+liminhag0d,BR,high,Brazilian
+skipnho,BR,high,Brazilian
+suetam1v4,BR,high,Brazilian
+oestagiario,BR,high,Brazilian
+xandfps,BR,high,Brazilian
+rubius,ES,high,Spain-based
+auronplay,ES,high,Spain
+ibai,ES,high,Spain
+thegrefg,ES,high,Spain (moved to Andorra; ES-audience)
+illojuan,ES,high,Spain
+elxokas,ES,high,Spain
+alexelcapo,ES,high,Spain
+folagorlives,ES,high,Spain
+luzu,ES,high,Spain (LuzuGames)
+cristinini,ES,high,Spain (IamCristinini)
+perxitaa,ES,high,Spain
+spursito,ES,high,Spain
+mixwell,ES,high,Spain
+biyin_,ES,high,Spain
+8cho,ES,high,Spain (Ocho)
+alexby11,ES,high,Spain
+coscu,AR,high,Argentina
+litkillah,AR,high,Argentina (Lit Killah)
+goncho,AR,high,Argentina
+elspreen,AR,high,Argentina (Spreen)
+jelty,AR,medium,Argentina - verify at M5
+elmiillor,ES,medium,Spain - verify at M5
+pato,AR,low,ambiguous - excluded from cohorts pending M5 verification
+nimuvt,ES,low,ambiguous - excluded pending M5
+carola,ES,low,ambiguous - excluded pending M5
+jaggerprincesa,MX,low,ambiguous - excluded pending M5
+beniju03,ES,low,ambiguous - excluded pending M5
+axozer,ES,low,ambiguous - excluded pending M5

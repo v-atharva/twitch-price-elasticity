@@ -53,6 +53,8 @@ def run_cs(
     control_group = control_group or est["control_group"]
     anticipation = est["anticipation"] if anticipation is None else anticipation
     covariates = est.get("covariates", []) if covariates is None else covariates
+    # a zero-variance covariate makes the DR design singular (e.g. pilot placeholders)
+    covariates = [c for c in covariates if panel[c].nunique(dropna=True) > 1]
 
     cols = ["channel_id", "mindex", "cohort_mindex", outcome, *covariates]
     data = panel[cols].set_index(["channel_id", "mindex"]).sort_index()
