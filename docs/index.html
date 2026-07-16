@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Did cheaper subs sell more subs? — Twitch price elasticity, a natural-experiment study</title>
+<title>Did cheaper subs sell more subs? — a step-by-step walkthrough of a Twitch pricing study</title>
 <meta name="description" content="Price elasticity of Twitch subscriptions from the 2021 local-pricing rollout, estimated with staggered difference-in-differences (Callaway & Sant'Anna).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -230,6 +230,48 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
 .fRow a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line2)}
 .fRow a:hover{color:var(--ink)}
 
+/* ---------- walkthrough: objective card ---------- */
+.objective{margin-top:56px;border:1px solid var(--line2);border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,var(--surface),var(--bg2))}
+.objRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line)}
+.objCell{background:var(--surface);padding:24px 26px}
+.objCell .q{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--violet);margin-bottom:10px}
+.objCell p{font-size:15px;color:var(--ink2);line-height:1.55}
+.objCell p b{color:var(--ink)}
+.objBanner{padding:22px 26px;font-size:15.5px;color:var(--ink2);border-top:1px solid var(--line);
+  background:radial-gradient(30rem 12rem at 0% 0%, rgba(124,92,255,.08), transparent 60%)}
+.objBanner b{color:var(--gold)}
+@media(max-width:820px){.objRow{grid-template-columns:1fr}}
+
+/* ---------- walkthrough: nav step tracker ---------- */
+.steps{display:flex;gap:0;margin-left:auto;align-items:center}
+.steps a{position:relative;font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--mute);
+  text-decoration:none;padding:6px 15px 6px 15px;transition:color .25s var(--ease)}
+.steps a .sn{color:var(--violet);opacity:.55;margin-right:6px;transition:opacity .25s}
+.steps a:hover{color:var(--ink)}
+.steps a.on{color:var(--ink)} .steps a.on .sn{opacity:1;color:var(--gold)}
+.steps a::after{content:"";position:absolute;bottom:-1px;left:15px;right:15px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--violet),var(--gold));transform:scaleX(0);transform-origin:left;
+  transition:transform .3s var(--ease)}
+.steps a.on::after{transform:scaleX(1)}
+@media(max-width:1000px){.steps{display:none}}
+
+/* ---------- walkthrough: step intro + takeaway ---------- */
+.stepTag{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--violet);margin-bottom:8px}
+.stepTag .dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--violet);color:var(--gold);
+  display:grid;place-items:center;font-size:11px}
+.ask{font-family:var(--serif);font-weight:420;font-size:20px;font-style:italic;color:var(--ink2);
+  border-left:2px solid var(--violet);padding:2px 0 2px 18px;margin:6px 0 26px;max-width:60ch}
+.ask b{font-style:normal;color:var(--ink)}
+.takeaway{margin:30px 0 6px;border:1px solid rgba(229,181,103,.28);border-radius:14px;padding:18px 22px;
+  display:flex;gap:16px;align-items:flex-start;
+  background:radial-gradient(24rem 12rem at 0% 0%, rgba(229,181,103,.07), transparent 60%)}
+.takeaway .k{flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);padding-top:2px}
+.takeaway p{font-size:15.5px;color:var(--ink);line-height:1.55;margin:0}
+.takeaway p b{color:var(--gold)}
+
 /* ---------- reveal ---------- */
 .rev{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:var(--d,0s)}
 .rev.in{opacity:1;transform:none}
@@ -246,62 +288,55 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top">ε<b>&nbsp;=&nbsp;−0.90</b>&nbsp;· twitch price elasticity</a>
-    <div class="links">
-      <a href="#experiment">The experiment</a>
-      <a href="#identification">How it works</a>
-      <a href="#results">Results</a>
-      <a href="#diagnostics">Checks</a>
-      <a href="#limits">Limitations</a>
+    <a class="brand" href="#top">twitch <b>price study</b></a>
+    <div class="steps" id="steptracker">
+      <a href="#experiment"><span class="sn">1</span>The setup</a>
+      <a href="#identification"><span class="sn">2</span>The method</a>
+      <a href="#results"><span class="sn">3</span>The finding</a>
+      <a href="#diagnostics"><span class="sn">4</span>The checks</a>
+      <a href="#limits"><span class="sn">5</span>The caveats</a>
     </div>
     <a class="gh" href="https://github.com/v-atharva/twitch-price-elasticity" target="_blank" rel="noopener">View source ↗</a>
   </div>
 </nav>
 
 <header id="top" class="wrap">
-  <div class="kicker rev">A natural-experiment study · 2020–2022 panel</div>
+  <div class="kicker rev">Measuring cause and effect from a real-world pricing change</div>
   <h1 class="rev" style="--d:.08s">Did cheaper subs <em>sell more subs?</em></h1>
-  <p class="dek rev" style="--d:.16s">In mid-2021, Twitch made channel subscriptions cheaper in nearly every country —
-    <b>77% cheaper in Turkey</b>, <b>20% cheaper in Western Europe</b> — while US prices never moved. Different countries,
-    different discounts, different dates, and one group that never changed: a natural experiment for the question every
-    subscription business asks. <b>When the price drops, how many more people subscribe?</b></p>
-  <div class="meta rev" style="--d:.24s">
-    <span>data <b>68 channels, tracked monthly, 2020–2022</b></span>
-    <span>method <b>difference-in-differences</b></span>
-    <span>every result <b>independently cross-checked</b></span>
-  </div>
+  <p class="dek rev" style="--d:.16s">When a subscription gets cheaper, do enough new subscribers show up to make it worth it?
+    That's one of the hardest questions in pricing, because you rarely get to see the same product at two prices. In 2021, Twitch
+    accidentally ran the experiment for us — and this project measures the answer.</p>
 
-  <div class="heroStat rev" style="--d:.34s">
-    <div class="cell big">
-      <div class="lab">Price sensitivity of demand</div>
-      <div class="val"><span id="eps">−0.00</span></div>
-      <div class="sub">a 10% price cut ≈ <i>9% more subscribers</i></div>
+  <div class="objective rev" style="--d:.24s">
+    <div class="objRow">
+      <div class="objCell">
+        <div class="q">What this project asks</div>
+        <p>If you cut the price of a channel subscription, <b>how many more people subscribe</b> — and does the extra volume make up for charging less?</p>
+      </div>
+      <div class="objCell">
+        <div class="q">Why it's answerable</div>
+        <p>In 2021 Twitch cut sub prices <b>country by country</b>, on different dates, by different amounts — while the US never changed. A built-in before/after, treated/untreated comparison.</p>
+      </div>
+      <div class="objCell">
+        <div class="q">What it took</div>
+        <p>Three years of monthly data on <b>68 channels</b>, a method built for staggered rollouts, and a stack of checks — including a cross-check against Twitch's own financial records.</p>
+      </div>
     </div>
-    <div class="cell">
-      <div class="lab">Subscriber lift</div>
-      <div class="val">+75%</div>
-      <div class="sub">vs comparable US channels</div>
-    </div>
-    <div class="cell">
-      <div class="lab">Chance it's a fluke</div>
-      <div class="val">1 in 200</div>
-      <div class="sub">200 randomized re-tests, none matched it</div>
-    </div>
-    <div class="cell">
-      <div class="lab">Free subs (control)</div>
-      <div class="val">±0</div>
-      <div class="sub">unaffected — as they should be <i>✓</i></div>
+    <div class="objBanner">
+      <b>The answer, in one line:</b> cheaper subs did sell more subs — a lot more — but because each one earned far less, the money came out about even. Scroll for the five-step walkthrough of how we got there.
     </div>
   </div>
 </header>
 
 <section id="experiment" class="wrap">
   <hr class="rule">
-  <div class="secHead rev" style="padding-top:70px"><span class="secNum">01</span><h2>The experiment Twitch ran for us</h2></div>
+  <div class="secHead rev" style="padding-top:70px"><span class="secNum">01</span><h2>The setup: a natural experiment</h2></div>
+  <div class="stepTag rev"><span class="dot">1</span> Where the data comes from</div>
+  <p class="ask rev">Before we can measure anything, we need a situation where <b>the same product sells at two different prices</b> for reasons that have nothing to do with how popular it is. Twitch handed us exactly that.</p>
   <p class="body rev">Before May 2021, subscribing to a channel cost <b>about $4.99 everywhere on Earth</b>. Then Twitch re-priced
-    country by country to match local cost of living. Crucially for us, the discount depends on where the <b>viewer</b> lives — and the
-    countries got their new prices on different dates, with different discounts. That staggered rollout is what lets us measure
-    cause and effect instead of just correlation.</p>
+    country by country to match local cost of living. Two things make this a genuine experiment rather than a coincidence: the discount
+    depends on where the <b>viewer</b> lives (not the streamer), and each region got its new price on a <b>different date</b>. So at any given moment,
+    some channels' audiences had cheaper subs and others didn't — the essence of a controlled comparison.</p>
 
   <div class="timeline rev" data-anim>
     <div class="tlRail"><i></i></div>
@@ -313,6 +348,8 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
     </div>
   </div>
 
+  <p class="body rev" style="margin-top:8px">The discounts weren't uniform — Turkey's dropped by three-quarters, Spain's by a fifth. That range is a gift: if price really drives
+    subscriptions, <b>deeper cuts should produce bigger jumps</b>, and we can test for exactly that later.</p>
   <div class="doses rev" data-anim>
     <div class="dose"><span class="c">Turkey <small>9.90 TRY</small></span><span class="track"><span class="fill" style="--w:77%;--d:.05s"></span></span><span class="pct">−77%</span></div>
     <div class="dose"><span class="c">Brazil <small>R$ 7.90</small></span><span class="track"><span class="fill" style="--w:69%;--d:.15s"></span></span><span class="pct">−69%</span></div>
@@ -321,15 +358,20 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
     <div class="dose"><span class="c">Spain <small>€ 3.99</small></span><span class="track"><span class="fill" style="--w:20%;--d:.45s"></span></span><span class="pct">−20%</span></div>
     <div class="dose"><span class="c">United States <small>$4.99 — control</small></span><span class="track"><span class="fill" style="--w:0%"></span></span><span class="pct" style="color:var(--mute)">±0%</span></div>
   </div>
+  <div class="takeaway rev"><span class="k">Step 1</span><p>We have the same product selling at many different prices, on a schedule Twitch set — not one we cherry-picked. <b>Now we need a fair way to compare.</b></p></div>
 </section>
 
 <section id="identification" class="wrap">
   <hr class="rule">
-  <div class="secHead rev" style="padding-top:70px"><span class="secNum">02</span><h2>How the comparison works</h2></div>
-  <p class="body rev">A Turkish-language channel has mostly Turkish viewers, so it "gets" Turkey's price cut; a US-focused channel never gets one.
-    We group channels by their audience's country (using broadcast language and where the streamer lives) and compare each treated group
-    against US channels, before and after the price change. The method — difference-in-differences — is the standard tool for exactly this
-    situation, and every estimate is independently reproduced with a second implementation to guard against software error.</p>
+  <div class="secHead rev" style="padding-top:70px"><span class="secNum">02</span><h2>The method: a fair comparison</h2></div>
+  <div class="stepTag rev"><span class="dot">2</span> How we isolate the price effect</div>
+  <p class="ask rev">A channel's subscriptions rise and fall for a hundred reasons. <b>How do we separate "the price dropped" from everything else</b>
+    that was happening in 2021?</p>
+  <p class="body rev">The trick is to compare each treated group not against itself, but against channels that <em>didn't</em> get a price cut over the
+    same months. A Turkish-language channel has mostly Turkish viewers, so it "gets" Turkey's discount; a US-focused channel never does and acts
+    as the control. We match every channel to its audience country (using broadcast language and where the streamer lives), then measure the
+    <b>change in the treated group minus the change in the control group</b>. Anything that hit everyone equally — a good streaming year, a viral
+    game — cancels out. What's left is the price effect. This is a standard, decades-old method called difference-in-differences.</p>
 
   <div class="flow rev" data-anim>
     <div class="node">
@@ -365,17 +407,24 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
   </div>
   <div class="ctrl rev"><span class="dot"></span><span><b>The comparison group:</b> US-audience channels — the one market where the price never moved. Some of their international
     viewers did get discounts, which if anything makes our estimate slightly <em>conservative</em>.</span></div>
+  <div class="takeaway rev"><span class="k">Step 2</span><p>We can now read the price effect cleanly: treated channels minus comparable US channels, month by month. <b>So what does that comparison show?</b></p></div>
 </section>
 
 <section id="results" class="wrap">
   <hr class="rule">
-  <div class="secHead rev" style="padding-top:70px"><span class="secNum">03</span><h2>Results</h2></div>
+  <div class="secHead rev" style="padding-top:70px"><span class="secNum">03</span><h2>The finding: cheaper subs sold more subs</h2></div>
+  <div class="stepTag rev"><span class="dot">3</span> What the comparison reveals</div>
+  <p class="ask rev">Two questions, two pictures. First: <b>did subscriptions actually rise after the price cut</b> — and only after? Second:
+    <b>did deeper discounts produce bigger jumps?</b></p>
+  <p class="body rev">Figure 1 tracks treated channels against US channels around the moment prices changed (month 0). The line is flat before —
+    the two groups moved together, which is what makes the comparison trustworthy — then climbs steadily after. Subscriptions rose, and they
+    rose <em>because</em> of the cut, not before it.</p>
 
   <div class="plate rev" data-anim id="plate1">
     <div class="plateHead">
-      <span class="figNo">Figure 1</span>
-      <span class="figTitle">Paid subscriptions jump when local pricing lands</span>
-      <span class="figSub">Each dot: how treated channels compared to US channels that month, before and after the price cut landed (month 0). Shaded area = the range of uncertainty.</span>
+      <span class="figNo">Figure 1 · timing</span>
+      <span class="figTitle">Subscriptions climb only after the price drops</span>
+      <span class="figSub">Each dot: how treated channels compared to US channels that month. Left of 0 = before the cut (flat = good), right of 0 = after (rising). Shaded area = uncertainty.</span>
     </div>
     <svg id="evsvg" viewBox="0 0 980 460" role="img" aria-label="Event study: dynamic treatment effects from 12 months before to 12 months after local pricing"></svg>
     <div class="plateFoot">
@@ -386,10 +435,13 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
     <details class="tbl"><summary>data table</summary><div id="evtbl"></div></details>
   </div>
 
+  <p class="body rev">Figure 2 answers the second question by putting each country on a scatter: how deep its price cut was (left) against how much
+    its subscriptions grew (up). The dots line up — deeper cuts, bigger gains — and the slope of that line <em>is</em> the price sensitivity we're after.</p>
+
   <div class="plate rev" data-anim id="plate2">
     <div class="plateHead">
-      <span class="figNo">Figure 2</span>
-      <span class="figTitle">Bigger cuts, bigger gains — the demand curve's slope</span>
+      <span class="figNo">Figure 2 · dose &amp; response</span>
+      <span class="figTitle">The deeper the cut, the bigger the jump</span>
       <span class="figSub">Each dot is a country: further left = deeper price cut, higher up = bigger subscriber gain. The slope of the line is the price sensitivity: <b style="color:var(--gold)">−0.9</b>.</span>
     </div>
     <svg id="drsvg" viewBox="0 0 980 470" role="img" aria-label="Dose response: country-level treatment effects against price dose with elasticity fit"></svg>
@@ -401,9 +453,35 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
     <details class="tbl"><summary>data table</summary><div id="drtbl"></div></details>
   </div>
 
-  <p class="body rev" style="margin-top:34px">Cheaper subs sold more subs. A 10% price cut bought roughly <b>9% more paid subscribers</b>,
-    and countries with deeper cuts saw bigger gains. The growth came mostly from <b>mid-sized channels</b> — the very biggest barely moved —
-    which is exactly the tier of creators the policy was designed to help.</p>
+  <p class="body rev" style="margin-top:34px">Put together: a <b>10% price cut bought roughly 9% more paid subscribers</b>. The growth came mostly from
+    <b>mid-sized channels</b> — the very biggest barely moved — which is exactly the tier of creators the policy was designed to help. Here are the
+    headline numbers, and how sure we are of them:</p>
+
+  <div class="heroStat rev" data-anim style="margin-top:26px">
+    <div class="cell big">
+      <div class="lab">Price sensitivity of demand</div>
+      <div class="val"><span id="eps">−0.00</span></div>
+      <div class="sub">a 10% price cut ≈ <i>9% more subscribers</i></div>
+    </div>
+    <div class="cell">
+      <div class="lab">Subscriber lift</div>
+      <div class="val">+75%</div>
+      <div class="sub">vs comparable US channels</div>
+    </div>
+    <div class="cell">
+      <div class="lab">Chance it's a fluke</div>
+      <div class="val">1 in 200</div>
+      <div class="sub">200 randomized re-tests, none matched it</div>
+    </div>
+    <div class="cell">
+      <div class="lab">Free subs (control)</div>
+      <div class="val">±0</div>
+      <div class="sub">unaffected — as they should be <i>✓</i></div>
+    </div>
+  </div>
+
+  <p class="body rev" style="margin-top:34px">But more subscribers isn't the same as more money. Each new subscriber was paying a heavily discounted price — so what happened
+    to actual <b>revenue</b>? For that we could go beyond our tracker data to Twitch's own financial records.</p>
 
   <div class="reality rev" data-anim>
     <div class="rHead">
@@ -422,12 +500,17 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
       same revenue.</b> It's exactly what you'd expect from a big price cut — and it's almost certainly why Twitch paired the rollout with a
       12-month revenue guarantee to protect creators through the transition.</p>
   </div>
+  <div class="takeaway rev"><span class="k">Step 3</span><p>Cheaper subs sold a lot more subs, but earned about the same total revenue — and Twitch's own books confirm it. <b>Now, could this be wrong?</b></p></div>
 </section>
 
 <section id="diagnostics" class="wrap">
   <hr class="rule">
-  <div class="secHead rev" style="padding-top:70px"><span class="secNum">04</span><h2>Did it hold up?</h2></div>
-  <p class="body rev">A result is only as good as the attempts made to break it. Six checks, each of which could have killed this one:</p>
+  <div class="secHead rev" style="padding-top:70px"><span class="secNum">04</span><h2>The checks: could this be wrong?</h2></div>
+  <div class="stepTag rev"><span class="dot">4</span> Trying to break our own result</div>
+  <p class="ask rev">A number is only as trustworthy as the effort spent trying to disprove it. <b>What happens when we attack the finding
+    from every angle we can think of?</b></p>
+  <p class="body rev">Six checks, each designed to catch a different way this could have been a mirage. All six either passed or, in the honest
+    "worst-case" scenarios, left the effect smaller but still clearly present.</p>
   <div class="diagGrid">
     <div class="diag rev"><div class="lab">The free-subs check</div><div class="val ok">passed</div>
       <p>Prime subs cost nothing, so a price cut shouldn't move them — and it didn't. An early version of the analysis failed this check, which exposed a flaw we then fixed. The final result passes cleanly.</p></div>
@@ -446,7 +529,10 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
 
 <section id="limits" class="wrap">
   <hr class="rule">
-  <div class="secHead rev" style="padding-top:70px"><span class="secNum">05</span><h2>Limitations &amp; challenges</h2></div>
+  <div class="secHead rev" style="padding-top:70px"><span class="secNum">05</span><h2>The caveats: what to keep in mind</h2></div>
+  <div class="stepTag rev"><span class="dot">5</span> Where to read the result carefully</div>
+  <p class="ask rev">No study is the last word. <b>What are the honest limits of what this can tell you</b> — the things a careful reader
+    should hold in mind?</p>
   <ol class="threats rev">
     <li><b>Only large channels are visible.</b> Public tracking data doesn't reach back far enough for smaller channels, so this is a study of 2021's top creators — the long tail may respond even more strongly. (These channels are, at least, confirmed genuine: all 68 appear in Twitch's own payout records.)</li>
     <li><b>The comparison group isn't perfectly untouched.</b> US-focused channels have some international viewers who did get discounts. This biases our estimate down, not up.</li>
@@ -455,11 +541,14 @@ footer{margin-top:100px;border-top:1px solid var(--line);padding:56px 0 80px;fon
     <li><b>Some countries rest on few channels.</b> Mexico's result comes from 2 channels, Argentina's from 4 — individual results are noisy even where the overall pattern is clear.</li>
     <li><b>Currencies moved.</b> Turkey's lira lost ~45% of its value soon after rollout, so the discount people actually experienced kept shifting.</li>
   </ol>
+  <div class="takeaway rev"><span class="k">Step 5</span><p>Treat this as a solid estimate for large creators, not the final word for the whole platform. <b>Here's how you'd go further.</b></p></div>
 </section>
 
 <section class="wrap">
   <hr class="rule">
   <div class="secHead rev" style="padding-top:70px"><span class="secNum">06</span><h2>What would make this better</h2></div>
+  <p class="body rev">This study wrings a real answer out of <em>public</em> data. Anyone with Twitch's <em>internal</em> data — the obvious next step —
+    could sharpen every part of it:</p>
   <div class="better">
     <div class="b rev"><h3>Viewer-level treatment</h3><p>Assign by each subscriber's billing country — control contamination and the language proxy vanish in one move.</p></div>
     <div class="b rev" style="--d:.06s"><h3>Randomized price logs</h3><p>Twitch ran pre-rollout price tests (Brazil). Experiment logs replace parallel-trends assumptions entirely.</p></div>
@@ -619,20 +708,32 @@ const io=new IntersectionObserver(es=>es.forEach(x=>{
 }),{threshold:.18});
 document.querySelectorAll('.rev,[data-anim]').forEach(n=>io.observe(n));
 
-/* hero count-up */
+/* elasticity count-up — fires when the stat block scrolls into view */
 (function(){
-  const n=document.getElementById('eps'); let t0=null;
+  const n=document.getElementById('eps'); if(!n)return;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduce){n.textContent='−0.90';return}
-  function step(ts){ if(!t0)t0=ts; const p=Math.min((ts-t0)/1400,1), e=1-Math.pow(1-p,3);
-    n.textContent='−'+(0.90*e).toFixed(2); if(p<1)requestAnimationFrame(step); }
-  setTimeout(()=>requestAnimationFrame(step),500);
+  const block=n.closest('[data-anim]')||n;
+  let done=false;
+  function run(){ if(done)return; done=true; let t0=null;
+    function step(ts){ if(!t0)t0=ts; const p=Math.min((ts-t0)/1400,1), e=1-Math.pow(1-p,3);
+      n.textContent='−'+(0.90*e).toFixed(2); if(p<1)requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  new IntersectionObserver((es,o)=>es.forEach(x=>{if(x.isIntersecting){run();o.disconnect();}}),
+    {threshold:.4}).observe(block);
 })();
 
-/* progress bar */
+/* progress bar + nav step-tracker scroll-spy */
+const steps=[...document.querySelectorAll('#steptracker a')];
+const secForStep=steps.map(a=>document.querySelector(a.getAttribute('href')));
 addEventListener('scroll',()=>{
   const h=document.documentElement;
   document.getElementById('bar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  const mid=h.scrollTop+innerHeight*0.32;
+  let active=-1;
+  secForStep.forEach((s,i)=>{ if(s && s.offsetTop<=mid) active=i; });
+  steps.forEach((a,i)=>a.classList.toggle('on',i===active));
 },{passive:true});
 </script>
 </body>
