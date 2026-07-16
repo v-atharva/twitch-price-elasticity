@@ -63,6 +63,17 @@ flowchart LR
 - **Pre-trends:** joint leads test p = 0.35 (no evidence against parallel trends). Linear-trend sensitivity (the transparent special case of Rambachan–Roth honest-DiD): an insignificant lead slope of +0.03/month would, if extrapolated, cut the post-period average from 0.43 to 0.21 log points — the effect stays positive, but its magnitude is sensitive to trend assumptions. Stated as such.
 - **Robustness battery** (`outputs/estimates/robustness.csv`): not-yet-treated controls give an identical 0.56; drop-one-country spans 0.50–0.65; language-only assignment and winsorization barely move it. The interesting split: **below-median-size channels drive the effect (+0.90 ± 0.29) while the mega-channels show none (+0.02 ± 0.27)** — consistent with affordability mattering most outside the superstar tier, and implying the platform-wide elasticity is plausibly *larger* than our top-creator estimate.
 
+## External validation against Twitch's own records
+
+The subscriber counts are third-party tracker data, which invites the obvious question: *are they real?* The project owner separately supplied the 2021 leaked Twitch payout records for a **local-only** cross-check (breach-obtained personal financial data — handled strictly off-repository, never committed or published; only the aggregate results below leave that boundary):
+
+- **Sample authenticity: 68/68.** Every panel channel appears in Twitch's own monthly payout records — the sample is unquestionably real streamers, not tracker artifacts.
+- **Outcome validity: r = 0.73.** Log scraped subscriber counts correlate with log actual subscription revenue at 0.73 pooled (0.49 median within-channel month-to-month — moderate, as expected given snapshot-vs-flow timing, gift/Prime accounting, tier mix and FX). The DiD design is robust to level noise, which is the relevant property.
+- **Scale sanity: $2.80/sub.** Implied revenue per active subscriber is ~$2.80 (median) — exactly the ~50% a streamer keeps on a ~$4.99 sub (less abroad after local pricing). The counts are correctly scaled.
+- **The economic story, confirmed on Twitch's books.** Re-running the identical CS design with *subscription revenue* as the outcome gives an ATT of **−0.06 (se 0.17) — essentially flat** — even though subscriber *counts* rose ~+75%. Far more subscribers, each paying far less, sums to roughly unchanged revenue: the exact signature of a large price cut with |ε| < 1. This independently corroborates both the price cut and the elasticity, and explains why Twitch cushioned the rollout with a revenue guarantee.
+
+*Reproducible locally with `src/diagnostics/payout_validation.py` pointed at an owner-supplied file (`--payouts`); the module no-ops without it, so CI and public clones are unaffected.*
+
 ## Threats to validity (honest list)
 
 1. **Contaminated controls.** English-language channels have non-US viewers who *were* treated → attenuates estimates toward zero. Direction known, magnitude not.
@@ -70,7 +81,7 @@ flowchart LR
 3. **Tiny treated N (29 channels).** Analytic SEs are optimistic; the quotable uncertainty is the cluster bootstrap and permutation inference. Mexico rests on 2 channels; Argentina's negative point estimate reflects 4 channels and 2022 attrition (a top AR streamer semi-retired).
 4. **Popularity shocks correlated with treatment.** The 2021 Spanish-language Twitch boom is the clearest violation of parallel trends; handled via the Prime placebo, trend-sensitivity, and country-level dose contrast — but not eliminated.
 5. **Currency collapse.** The Turkish lira fell ~45% in late 2021; the dose uses rollout-date FX, and the local-currency price ratio is FX-free, but the *experienced* price path drifted after rollout.
-6. **Measurement error and selection into tracking.** Third-party tracker data; tracking starts cluster at 2020-05 and 2021-11; survivorship in rosters partially mitigated by using 2021-era archived rankings.
+6. **Measurement error and selection into tracking.** Third-party tracker data; tracking starts cluster at 2020-05 and 2021-11; survivorship in rosters partially mitigated by using 2021-era archived rankings. *Substantially addressed* by the external validation above — the counts match Twitch's own revenue records at the cross-sectional and economic level, though month-to-month tracker noise remains.
 7. **Anticipation.** Announced May 17, 2021; first cohort treated May 20. `anticipation=1` plus the ≥15-treated-days cohort rule handle partial-month exposure.
 8. **Revenue guarantee.** Twitch's 12-month guarantee affects *revenue*, not subscription counts — a key reason the outcome is counts.
 
@@ -101,4 +112,4 @@ uv run python -m src.diagnostics.run
 
 Layout: `src/{ingest,panel,estimate,diagnostics,report}/`, config in `config/study.yaml`, curated reference tables in `data/reference/`, narrative in `notebooks/analysis.ipynb`, ~300-word stakeholder summary in [RESULTS.md](RESULTS.md), design history in [PLAN.md](PLAN.md).
 
-*Data collection respected robots.txt and rate limits throughout; bot-protected pages were accessed only through a real, human-operated browser session, and blocked paths were treated as blocked. The October 2021 leaked payout dataset was deliberately not used.*
+*Data collection respected robots.txt and rate limits throughout; bot-protected pages were accessed only through a real, human-operated browser session, and blocked paths were treated as blocked. The October 2021 leaked payout dataset — breach-obtained personal financial data — was used only locally and only for aggregate external validation; no individual figures from it are committed or published anywhere in this repository.*

@@ -1,17 +1,19 @@
 {
-  "panel": "data/processed/pilot_panel.parquet",
-  "n_channels": 55,
-  "n_rows": 1560,
-  "cs_overall_att": 1.1327611485291538,
-  "cs_overall_se": 0.45189748505805477,
-  "twfe_att": 0.8325342296179513,
-  "twfe_se": 0.19926217612011596,
-  "elasticity": -0.6616939707069298,
-  "elasticity_se": 0.40755393100809595,
+  "panel": "data/processed/synthetic_panel.parquet",
+  "n_channels": 3000,
+  "n_rows": 108000,
+  "cs_overall_att": 0.45241827102496956,
+  "cs_overall_se": 0.005685005572772747,
+  "twfe_att": 0.4120907780692161,
+  "twfe_se": 0.0038860075996385844,
+  "elasticity": -0.6021626374572245,
+  "elasticity_se": 0.0028280260750539374,
   "elasticity_ci": [
-    -1.4604849972405198,
-    0.1370970558266602
+    -0.6077054667116705,
+    -0.5966198082027786
   ],
-  "followers_overall_att": 1.0716032537891615,
-  "followers_overall_se": 0.44081532145958285
+  "followers_overall_att": 0.003401298762355472,
+  "followers_overall_se": 0.004297214495665036,
+  "true_avg_effect_treated_cells": 0.4463594541167043,
+  "true_elasticity": -0.6
 }

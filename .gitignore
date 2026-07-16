@@ -15,3 +15,10 @@ __pycache__/
 
 # documentation agent workspace
 devdocs/
+
+# leaked payout data — STRICTLY LOCAL, never commit
+devdocs/twitch-payouts/
+**/twitch-payouts/
+*payout*.csv
+*payout*.csv.gz
+data/external/
