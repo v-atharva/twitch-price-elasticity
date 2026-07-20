@@ -1,4 +1,4 @@
-# Did cheaper subs sell more subs?
+# Do variable subscription costs yield more revenue by attarcting more subs or is it purely growth minus the added revenue?
 
 **Price elasticity of Twitch channel subscriptions, estimated from the 2021 country-by-country local-pricing rollout using staggered difference-in-differences (Callaway & Sant'Anna 2021).**
 
