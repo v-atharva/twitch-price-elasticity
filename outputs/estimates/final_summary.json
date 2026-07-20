@@ -5,7 +5,7 @@
   "anticipation": 1,
   "cs_overall_att": 0.5608360946600607,
   "cs_overall_se": 0.2099161171516197,
-  "twfe_att": 0.843520001704371,
+  "twfe_att": 0.8435200017044205,
   "elasticity_mature": -0.9002369950248303,
   "elasticity_se_analytic": 0.09818741754863392,
   "elasticity_ci_boot": [

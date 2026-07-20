@@ -22,3 +22,6 @@ devdocs/twitch-payouts/
 *payout*.csv
 *payout*.csv.gz
 data/external/
+
+# Browser-automation scratch output
+.playwright-mcp/
